@@ -1,38 +1,46 @@
 import json
 import time
 
-from utils.logs import log_master_run as lmr
+from utils.logs import log_job_run as ljr
+
+from t1dsa import master_import as mi
+from t3reporting import master_reporting as mr
 
 def execute_data_flow(local_config):
     # Register MasterJob start
     print('\n######### Register MasterJob start #########')
     entry = {
-        "Level": "INFO",
-        "Type": "Task",
+        "MsgLevel": "INFO",
+        "JobType": "Complete dataflow",
         "Status": "Started",
-        "Message": "Complte run started"
+        "Message": "Complete dataflow started"
     }
-    run_id = lmr.append_log_master_run(local_config,entry)
+    run_id = ljr.start_log_job_run(local_config,entry)
 
     # Execute Landing Zone to DSA import
     print('\n######### Execute Landing Zone to DSA import #########')
-    time.sleep(5)
+    module_summary = mi.run_master_import(local_config,run_id)
+    print(module_summary)
 
     # Execute ETL programme: DSA to EDW
     # Dimensional modelling to be added later...
 
     # Build reports
     print('\n######### Build reports #########')
+    module_summary = mr.run_master_reporting(local_config,run_id)
+    print(module_summary)
+    time.sleep(2)
 
     # Register MasterJob end
     print('\n######### Register MasterJob end #########')
     entry = {
-        "Id": run_id,
+        "JobRunId": run_id,
+        # "MsgLevel": "WARNING" # Optional
         "Status": "Completed",
-        "Message": "Step 1 completed."
+        "Message": "Complete dataflow ran successfully."
     }
 
-    lmr.update_log_entry(local_config,entry)
+    ljr.end_log_job_run(local_config,entry)
     # Build log reports
     print('\n######### Build log reports #########')
 

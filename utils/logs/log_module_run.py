@@ -9,18 +9,8 @@ from utils.general import time_tools as tt
 # Log append function
 # --------------------------
 
-def append_log_master_run(local_config, entry):
-    """
-    Appends a new row to the log file.
-    entry = {
-        'Level': ...,
-        'Type': ...,
-        'Status': ...,
-        'Message': ...
-    }
-    Returns: Id (integer)
-    """
-    log_name = 'master_run'
+def start_log_module_run(local_config, entry):
+    log_name = 'module_run'
     database_name = 'meta_data'
     log_path = os.path.join(
         local_config.get('DATABASE_ROOT_PATH')
@@ -35,15 +25,33 @@ def append_log_master_run(local_config, entry):
     # Generate next ID
     new_id = sm.sequence_get_next_id(local_config,database_name,log_name)
 
-    # Convert fields
+    # Prepare fields
+    # new_row = {
+    #     "ModuleRunId": new_id,
+    #     "JobRunId": entry.get("JobRunId"),
+    #     "MsgLevel": entry.get("MsgLevel"),
+    #     "ModuleType": entry.get("ModuleType"),
+    #     "TimeStarted_utc": datetime.now(timezone.utc),
+    #     "TimeEnded_utc": None,
+    #     "Duration": None,
+    #     "Status": entry.get("Status"),
+    #     "TasksTotal": None,
+    #     "TasksSucceeded": None,
+    #     "TasksFailed": None,
+    #     "Message": entry.get("Message"),
+    # }
     new_row = {
-        "Id": new_id,
-        "Level": entry.get("Level"),
-        "Type": entry.get("Type"),
+        "ModuleRunId": new_id,
+        "JobRunId": entry.get("JobRunId"),
+        "MsgLevel": entry.get("MsgLevel"),
+        "ModuleType": entry.get("ModuleType"),
         "TimeStarted_utc": datetime.now(timezone.utc),
-        "TimeEnded_utc": None,
-        "Duration": None,
+        "TimeEnded_utc": pd.NaT,       # Use pd.NaT for missing datetimes
+        "Duration": 'na',             # Use pd.NA for missing string
         "Status": entry.get("Status"),
+        "TasksTotal": int(0),
+        "TasksSucceeded": int(0),
+        "TasksFailed": int(0),
         "Message": entry.get("Message"),
     }
 
@@ -63,17 +71,8 @@ def append_log_master_run(local_config, entry):
 # Log update function
 # --------------------------
 
-def update_log_entry(local_config, update):
-    """
-    Updates an existing row:
-    update = {
-        'Id': ...,
-        'Status': ...,
-        'Message': ...
-    }
-    Automatically calculates Duration.
-    """
-    log_name = 'master_run'
+def end_log_module_run(local_config, update):
+    log_name = 'module_run'
     database_name = 'meta_data'
     log_path = os.path.join(
         local_config.get('DATABASE_ROOT_PATH')
@@ -86,15 +85,20 @@ def update_log_entry(local_config, update):
 
     df = pd.read_csv(log_path)
 
-    id_val = update["Id"]
+    id_val = update["ModuleRunId"]
 
-    if id_val not in df["Id"].values:
+    if id_val not in df["ModuleRunId"].values:
         raise ValueError(f"Log entry Id {id_val} not found.")
 
     # Update row
-    idx = df.index[df["Id"] == id_val][0]
+    idx = df.index[df["ModuleRunId"] == id_val][0]
 
+    df.at[idx, "MsgLevel"] = update.get("MsgLevel", df.at[idx, "MsgLevel"])
+    df["TimeEnded_utc"] = pd.to_datetime(df["TimeEnded_utc"], utc=True)
     df.at[idx, "TimeEnded_utc"] = datetime.now(timezone.utc)
+    df.at[idx, "TasksTotal"] = int(update.get("TasksTotal"))
+    df.at[idx, "TasksSucceeded"] = int(update.get("TasksSucceeded"))
+    df.at[idx, "TasksFailed"] = int(update.get("TasksFailed"))
     df.at[idx, "Status"] = update.get("Status", df.at[idx, "Status"])
     df.at[idx, "Message"] = update.get("Message", df.at[idx, "Message"])
 
@@ -102,12 +106,16 @@ def update_log_entry(local_config, update):
     try:
         start_time = pd.to_datetime(df.at[idx, "TimeStarted_utc"])
         end_time = pd.to_datetime(df.at[idx, "TimeEnded_utc"])
-        # start_time = df.at[idx, "TimeStarted_utc"]
-        # end_time = df.at[idx, "TimeEnded_utc"]
         duration_str = tt.duration_xhxxmxxs(start_time,end_time)
-        print(duration_str)
+        df["Duration"] = df["Duration"].astype("object")
         df.at[idx, "Duration"] = duration_str
     except Exception:
         df.at[idx, "Duration"] = None
+
+    # Keep only rows where TimeStarted_utc is within the last 60 days
+    log_retention_days = local_config.get('LOG_RETENTION_DAYS')
+    df['TimeStarted_utc'] = pd.to_datetime(df['TimeStarted_utc'], utc=True)
+    cutoff = pd.Timestamp.now(tz='UTC') - pd.Timedelta(days=log_retention_days)
+    df = df[df['TimeStarted_utc'] >= cutoff]
 
     df.to_csv(log_path, index=False)
