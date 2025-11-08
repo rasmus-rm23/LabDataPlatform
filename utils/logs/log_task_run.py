@@ -9,8 +9,8 @@ from utils.general import time_tools as tt
 # Log append function
 # --------------------------
 
-def start_log_module_run(local_config, entry):
-    log_name = 'module_run'
+def start_log_task_run(local_config, entry):
+    log_name = 'task_run'
     database_name = 'meta_data'
     log_path = os.path.join(
         local_config.get('DATABASE_ROOT_PATH')
@@ -27,17 +27,14 @@ def start_log_module_run(local_config, entry):
 
     # Prepare fields
     new_row = {
-        "ModuleRunId": new_id,
-        "JobRunId": entry.get("JobRunId"),
+        "TaskRunId": new_id,
+        "ModuleRunId": entry.get("ModuleRunId"),
         "MsgLevel": entry.get("MsgLevel"),
-        "ModuleType": entry.get("ModuleType"),
+        "TaskType": entry.get("TaskType"),
         "TimeStarted_utc": datetime.now(timezone.utc),
         "TimeEnded_utc": pd.NaT,       # Use pd.NaT for missing datetimes
         "Duration": 'na',             # Use pd.NA for missing string
         "Status": entry.get("Status"),
-        "TasksTotal": int(0),
-        "TasksSucceeded": int(0),
-        "TasksFailed": int(0),
         "Message": entry.get("Message"),
     }
 
@@ -57,8 +54,8 @@ def start_log_module_run(local_config, entry):
 # Log update function
 # --------------------------
 
-def end_log_module_run(local_config, update):
-    log_name = 'module_run'
+def end_log_task_run(local_config, update):
+    log_name = 'task_run'
     database_name = 'meta_data'
     log_path = os.path.join(
         local_config.get('DATABASE_ROOT_PATH')
@@ -71,20 +68,17 @@ def end_log_module_run(local_config, update):
 
     df = pd.read_csv(log_path)
 
-    id_val = update["ModuleRunId"]
+    id_val = update["TaskRunId"]
 
-    if id_val not in df["ModuleRunId"].values:
+    if id_val not in df["TaskRunId"].values:
         raise ValueError(f"Log entry Id {id_val} not found.")
 
     # Update row
-    idx = df.index[df["ModuleRunId"] == id_val][0]
+    idx = df.index[df["TaskRunId"] == id_val][0]
 
     df.at[idx, "MsgLevel"] = update.get("MsgLevel", df.at[idx, "MsgLevel"])
     df["TimeEnded_utc"] = pd.to_datetime(df["TimeEnded_utc"], utc=True)
     df.at[idx, "TimeEnded_utc"] = datetime.now(timezone.utc)
-    df.at[idx, "TasksTotal"] = int(update.get("TasksTotal"))
-    df.at[idx, "TasksSucceeded"] = int(update.get("TasksSucceeded"))
-    df.at[idx, "TasksFailed"] = int(update.get("TasksFailed"))
     df.at[idx, "Status"] = update.get("Status", df.at[idx, "Status"])
     df.at[idx, "Message"] = update.get("Message", df.at[idx, "Message"])
 
