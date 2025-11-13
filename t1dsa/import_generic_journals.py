@@ -4,7 +4,7 @@ from utils.logs import log_task_run as ltr
 
 def import_generic_journals(local_config,module_run_id):
     # Register Task start
-    print('\n#### Register MasterModule start ####')
+    print('\nImport generic journals - NOT IMPLEMENTED')
     entry = {
         "ModuleRunId": module_run_id,
         "MsgLevel": "INFO",
@@ -13,9 +13,6 @@ def import_generic_journals(local_config,module_run_id):
         "Message": "Import generic xlsx journals started"
     }
     task_run_id = ltr.start_log_task_run(local_config,entry)
-
-    time.sleep(2)
-    print('\n#### Register MasterModule end ####')
 
     entry = {
         "TaskRunId": task_run_id,
