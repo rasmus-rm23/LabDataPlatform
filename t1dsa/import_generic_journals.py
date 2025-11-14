@@ -6,7 +6,7 @@ def import_generic_journals(local_config,module_run_id):
     # Register Task start
     print('\nImport generic journals - NOT IMPLEMENTED')
     entry = {
-        "ModuleRunId": module_run_id,
+        "DW_ModuleRunId": module_run_id,
         "MsgLevel": "INFO",
         "ModuleType": "Import generic xlsx journals",
         "Status": "Started",
@@ -15,7 +15,7 @@ def import_generic_journals(local_config,module_run_id):
     task_run_id = ltr.start_log_task_run(local_config,entry)
 
     entry = {
-        "TaskRunId": task_run_id,
+        "DW_TaskRunId": task_run_id,
         # "MsgLevel": "WARNING" # Optional
         "Status": "Completed",
         "Message": "Import generic xlsx journals complete"

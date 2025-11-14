@@ -11,5 +11,6 @@ def create_report_log_job(local_config):
         return
     
     df = df.sort_values(by='TimeStarted_utc',ascending=False)
+    df = df.head(200)
 
     ot.generate_html_show_table(local_config,df,'log_job')

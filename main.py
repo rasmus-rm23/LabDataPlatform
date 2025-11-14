@@ -40,14 +40,14 @@ def execute_data_flow(local_config):
     print('\n######### Register MasterJob end #########')
     if warning_encountered:
         entry = {
-            "JobRunId": run_id,
+            "DW_JobRunId": run_id,
             "MsgLevel": "WARNING",
             "Status": "Completed",
             "Message": "Some jobs returned a warning"
         }
     else:
         entry = {
-            "JobRunId": run_id,
+            "DW_JobRunId": run_id,
             "Status": "Completed",
             "Message": "Complete dataflow ran successfully."
         }

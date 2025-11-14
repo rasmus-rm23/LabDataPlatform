@@ -7,6 +7,9 @@ def get_file_list(folder='',extention=None):
     results = []
 
     for file in os.listdir(folder):
+        if file.startswith("~$"):
+            continue
+
         if (extention is not None) and (not file.lower().endswith(f'.{extention}')):
             continue
 
@@ -46,3 +49,24 @@ def move_input_files_to_folder(file_path, is_consumed):
         error_msg = f"move_input_files_to_folder>> Failed to move {file_path}: {e}"
 
     return error_flag, error_msg
+
+import pandas as pd
+
+def read_excel_safe(file_path: str):
+    df = None
+    error_flag = False
+    error_msg = ""
+
+    try:
+        df = pd.read_excel(file_path)
+    except PermissionError:
+        error_flag = True
+        error_msg = "Unable to open file; locked by a user"
+    except FileNotFoundError:
+        error_flag = True
+        error_msg = "File not found"
+    except Exception as e:
+        error_flag = True
+        error_msg = f"Unexpected error: {str(e)}"
+
+    return df, error_flag, error_msg

@@ -27,7 +27,7 @@ def start_log_job_run(local_config, entry):
 
     # Prepare fields
     new_row = {
-        "JobRunId": new_id,
+        "DW_JobRunId": new_id,
         "User": local_config.get('USER_INITIALS'),
         "MsgLevel": entry.get("MsgLevel"),
         "JobType": entry.get("JobType"),
@@ -68,13 +68,13 @@ def end_log_job_run(local_config, update):
 
     df = pd.read_csv(log_path)
 
-    id_val = update["JobRunId"]
+    id_val = update["DW_JobRunId"]
 
-    if id_val not in df["JobRunId"].values:
+    if id_val not in df["DW_JobRunId"].values:
         raise ValueError(f"Log entry Id {id_val} not found.")
 
     # Update row
-    idx = df.index[df["JobRunId"] == id_val][0]
+    idx = df.index[df["DW_JobRunId"] == id_val][0]
 
     df.at[idx, "MsgLevel"] = update.get("MsgLevel", df.at[idx, "MsgLevel"])
     df["TimeEnded_utc"] = pd.to_datetime(df["TimeEnded_utc"], utc=True)

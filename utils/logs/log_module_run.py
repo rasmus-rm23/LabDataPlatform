@@ -27,8 +27,8 @@ def start_log_module_run(local_config, entry):
 
     # Prepare fields
     new_row = {
-        "ModuleRunId": new_id,
-        "JobRunId": entry.get("JobRunId"),
+        "DW_ModuleRunId": new_id,
+        "DW_JobRunId": entry.get("DW_JobRunId"),
         "MsgLevel": entry.get("MsgLevel"),
         "ModuleType": entry.get("ModuleType"),
         "TimeStarted_utc": datetime.now(timezone.utc),
@@ -71,13 +71,13 @@ def end_log_module_run(local_config, update):
 
     df = pd.read_csv(log_path)
 
-    id_val = update["ModuleRunId"]
+    id_val = update["DW_ModuleRunId"]
 
-    if id_val not in df["ModuleRunId"].values:
+    if id_val not in df["DW_ModuleRunId"].values:
         raise ValueError(f"Log entry Id {id_val} not found.")
 
     # Update row
-    idx = df.index[df["ModuleRunId"] == id_val][0]
+    idx = df.index[df["DW_ModuleRunId"] == id_val][0]
 
     df.at[idx, "MsgLevel"] = update.get("MsgLevel", df.at[idx, "MsgLevel"])
     df["TimeEnded_utc"] = pd.to_datetime(df["TimeEnded_utc"], utc=True)

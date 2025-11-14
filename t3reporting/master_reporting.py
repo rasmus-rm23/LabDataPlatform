@@ -6,7 +6,7 @@ from utils.logs import log_module_run as lmr
 def run_master_reporting(local_config,job_run_id):
     # Register MasterJob start
     entry = {
-        "JobRunId": job_run_id,
+        "DW_JobRunId": job_run_id,
         "MsgLevel": "INFO",
         "ModuleType": "Master Reporter",
         "Status": "Started",
@@ -20,7 +20,7 @@ def run_master_reporting(local_config,job_run_id):
 
     no_tasks_total = no_tasks_succeeded + no_tasks_failed
     entry = {
-        "ModuleRunId": module_run_id,
+        "DW_ModuleRunId": module_run_id,
         "MsgLevel": "INFO",
         "Status": "Completed",
         "TasksTotal": no_tasks_total,

@@ -10,7 +10,7 @@ from t1dsa.Mylab import import_mylab_myjournal2 as imlmj2
 def run_master_import(local_config,job_run_id):
     # Register MasterJob start
     entry = {
-        "JobRunId": job_run_id,
+        "DW_JobRunId": job_run_id,
         "MsgLevel": "INFO",
         "ModuleType": "Master DSA Importer",
         "Status": "Started",
@@ -33,7 +33,7 @@ def run_master_import(local_config,job_run_id):
 
     no_tasks_total = no_tasks_succeeded + no_tasks_failed
     entry = {
-        "ModuleRunId": module_run_id,
+        "DW_ModuleRunId": module_run_id,
         "MsgLevel": "INFO",
         "Status": "Completed",
         "TasksTotal": no_tasks_total,
