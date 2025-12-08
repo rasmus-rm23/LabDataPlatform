@@ -1,7 +1,8 @@
 import time
 
-from utils.logs import log_job_run as ljr
 from utils.logs import log_module_run as lmr
+from t3reporting.report_templates import navbar_create as nc
+from t3reporting.mylab_reporting import report_mylab_myjournal as rmm
 
 def run_master_reporting(local_config,job_run_id):
     # Register MasterJob start
@@ -14,9 +15,21 @@ def run_master_reporting(local_config,job_run_id):
     }
     module_run_id = lmr.start_log_module_run(local_config,entry)
 
-    no_tasks_succeeded = 3
-    no_tasks_failed = 1
+    no_tasks_succeeded = 0
+    no_tasks_failed = 0
 
+    nc.generate_navbar_html(json_file="t3reporting/report_templates/navbar_setup.json",local_config=local_config)
+    no_tasks_succeeded += 1
+
+    if rmm.create_report_mylab_myjournal1(local_config):
+        no_tasks_succeeded += 1
+    else:
+        no_tasks_failed += 1
+
+    if rmm.create_report_mylab_myjournal2(local_config):
+        no_tasks_succeeded += 1
+    else:
+        no_tasks_failed += 1
 
     no_tasks_total = no_tasks_succeeded + no_tasks_failed
     entry = {

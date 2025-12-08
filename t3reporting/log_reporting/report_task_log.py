@@ -13,4 +13,4 @@ def create_report_log_task(local_config):
     df = df.sort_values(by='TimeStarted_utc',ascending=False)
     df = df.head(200)
 
-    ot.generate_html_show_table(local_config,df,'log_task')
+    ot.generate_html_show_table(local_config,df,'admin/logs/task_run_log','Task Run Log')

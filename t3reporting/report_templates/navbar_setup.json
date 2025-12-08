@@ -1,0 +1,92 @@
+[
+    {
+        "item": "home",
+        "display text": "Home",
+        "link": "<report_base_path>index.html"
+    },
+    {
+        "item": "journals",
+        "display text": "Journals",
+        "link": "<report_base_path>journals/index.html",
+        "subitems": [
+            {
+                "item": "test_lab",
+                "display text": "Test lab",
+                "subitems": [
+                    {
+                        "item": "journal1",
+                        "display text": "Journal1",
+                        "link": "<report_base_path>journals/mylab/myjournal.html"
+                    },
+                    {
+                        "item": "journal2",
+                        "display text": "Journal2",
+                        "link": "<report_base_path>journals/mylab/myjournal2.html"
+                    }
+                ]
+            },
+            {
+                "item": "pilot_lab",
+                "display text": "Pilot lab",
+                "link": "<report_base_path>journals/pilot_lab/index.html",
+                "subitems": [
+                    {
+                        "item": "dry_fractionation",
+                        "display text": "Dry fractionation",
+                        "link": "<report_base_path>journals/pilot_lab/dry_fractionation.html"
+                    },
+                    {
+                        "item": "deodorisation",
+                        "display text": "Deodorisation",
+                        "link": "<report_base_path>journals/pilot_lab/deodorisation.html"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "item": "admin",
+        "display text": "Admin",
+        "link": "admin/index.html",
+        "subitems": [
+            {
+                "item": "logs",
+                "display text": "Logs",
+                "subitems": [
+                    {
+                        "item": "master_run_log",
+                        "display text": "Master run log",
+                        "link": "<report_base_path>admin/logs/master_run_log.html"
+                    },
+                    {
+                        "item": "module_run_log",
+                        "display text": "Module run log",
+                        "link": "<report_base_path>admin/logs/module_run_log.html"
+                    },
+                    {
+                        "item": "task_run_log",
+                        "display text": "Task run log",
+                        "link": "<report_base_path>admin/logs/task_run_log.html"
+                    }
+                ]
+            },
+            {
+                "item": "users",
+                "display text": "Userd",
+                "link": "<report_base_path>journals/pilot_lab/index.html",
+                "subitems": [
+                    {
+                        "item": "some_info",
+                        "display text": "Some info",
+                        "link": "<report_base_path>admin/users/some_info.html"
+                    },
+                    {
+                        "item": "some_other_info",
+                        "display text": "Some other info",
+                        "link": "<report_base_path>admin/users/some_other_info.html"
+                    }
+                ]
+            }
+        ]
+    }
+]

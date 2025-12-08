@@ -27,9 +27,12 @@ def create_scatter_plot(local_config, df, report_name, x_column, y_column, hue_c
     )
     folder_path = os.path.dirname(save_file_path)
     os.makedirs(folder_path, exist_ok=True)
-    plot_file_path = f'{report_name}.png'
+    plot_file_path = os.path.join(
+        local_config.get('REPORTING_ROOT_PATH'),
+        f'{report_name}.png'
+    )
 
-    plt.savefig(save_file_path, dpi=300)
+    plt.savefig(plot_file_path, dpi=300)
     plt.close()
 
     return plot_file_path
@@ -75,14 +78,14 @@ def create_grouped_scatter_plot(local_config, df, report_name, x_column, y_colum
 
     return plot_file_path
 
-def generate_html_show_table(local_config, df, report_name):
+def generate_html_show_table(local_config, df, report_name, page_header_text):
     # Generate HTML with embedded JS
-    html_template = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>CSV Table Viewer</title>
+    file_path = os.path.join(
+        local_config.get('REPORTING_ROOT_PATH'),
+        f'templates/master.html'
+    )
+
+    html_header = f"""
         <style>
             body {{
                 font-family: Arial, sans-serif;
@@ -106,9 +109,12 @@ def generate_html_show_table(local_config, df, report_name):
                 box-sizing: border-box;
             }}
         </style>
-    </head>
-    <body>
-        <h2>CSV Data Table</h2>
+    """
+
+    html_body = f"""
+        <br>
+        <h2>{page_header_text}</h2>
+        <br>
         <table id="dataTable">
             <thead>
                 <tr>
@@ -163,6 +169,22 @@ def generate_html_show_table(local_config, df, report_name):
     </body>
     </html>
     """
+
+    master_file_path = os.path.join(
+        local_config.get('REPORTING_ROOT_PATH'),
+        f'templates/master.html'
+    )
+
+    # Read master template
+    with open(master_file_path, "r", encoding="utf-8") as f:
+        html_template = f.read()
+
+    # Replace placeholders
+    html_template = (
+        html_template
+            .replace("HEADER_CONTENT_PLACE_HOLDER", html_header)
+            .replace("BODY_CONTENT_PLACE_HOLDER", html_body)
+    )
 
     # Write HTML to file
     file_path = os.path.join(
@@ -177,7 +199,7 @@ def generate_html_show_table(local_config, df, report_name):
 
     print(f"HTML file generated: {report_name}")
 
-def generate_html_plot_and_table(local_config, df, report_name, x_column, y_column, hue_column=None, classifier_column=None):
+def generate_html_plot_and_table(local_config, df, report_name, page_header_text, x_column, y_column, hue_column=None, classifier_column=None):
     if hue_column is not None:
         plot_file_path = create_scatter_plot(local_config, df, report_name, x_column, y_column, hue_column=hue_column)
     elif classifier_column is not None:
@@ -187,12 +209,7 @@ def generate_html_plot_and_table(local_config, df, report_name, x_column, y_colu
         return
 
     # Generate HTML with embedded JS
-    html_template = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>CSV Table Viewer</title>
+    html_header = f"""
         <style>
             body {{
                 font-family: Arial, sans-serif;
@@ -216,14 +233,17 @@ def generate_html_plot_and_table(local_config, df, report_name, x_column, y_colu
                 box-sizing: border-box;
             }}
         </style>
-    </head>
-    <body>
+    """
+    html_body = f"""
+        <br>
+        <h2>{page_header_text}</h2>
+        <br>
+
         <figure style="text-align: center;">
             <img src="{plot_file_path}" alt="Scatter plot of a vs b" width="600">
-            <figcaption>Figure 1: Scatter plot of column a vs b colored by column c</figcaption>
+            <figcaption>Figure 1: Scatter plot of column {y_column} vs {x_column} colored by column {hue_column}</figcaption>
         </figure>
 
-        <h2>CSV Data Table</h2>
         <table id="dataTable">
             <thead>
                 <tr>
@@ -274,10 +294,23 @@ def generate_html_plot_and_table(local_config, df, report_name, x_column, y_colu
         table.setAttribute("data-sortdir", asc ? "asc" : "desc");
     }}
     </script>
-
-    </body>
-    </html>
     """
+
+    master_file_path = os.path.join(
+        local_config.get('REPORTING_ROOT_PATH'),
+        f'templates/master.html'
+    )
+
+    # Read master template
+    with open(master_file_path, "r", encoding="utf-8") as f:
+        html_template = f.read()
+
+    # Replace placeholders
+    html_template = (
+        html_template
+            .replace("HEADER_CONTENT_PLACE_HOLDER", html_header)
+            .replace("BODY_CONTENT_PLACE_HOLDER", html_body)
+    )
 
     # Write HTML to file
     file_path = os.path.join(
