@@ -52,13 +52,17 @@ def move_input_files_to_folder(file_path, is_consumed):
 
 import pandas as pd
 
-def read_excel_safe(file_path: str):
+def read_excel_safe(file_path: str, sheet_name=0, read_header=True):
     df = None
     error_flag = False
     error_msg = ""
 
     try:
-        df = pd.read_excel(file_path)
+        if read_header:
+            header = 0
+        else:
+            header = None
+        df = pd.read_excel(file_path, sheet_name=sheet_name, header=header)
     except PermissionError:
         error_flag = True
         error_msg = "Unable to open file; locked by a user"

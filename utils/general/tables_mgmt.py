@@ -73,7 +73,11 @@ def upsert_csv(local_config, database_name, schema_name, table_name, df, key_col
             df[key_col] = df[key_col].astype(str).str.strip()
             existing_df = existing_df[~existing_df[key_col].isin(df[key_col])]
             # concatenate existing and new data
-            updated_df = pd.concat([existing_df, df], ignore_index=True)
+            if existing_df.shape[0] == 0:
+                updated_df = df.copy()
+            else:
+                updated_df = pd.concat([existing_df, df], ignore_index=True)
+            
         except Exception as e:
             error_flag = True
             error_msg = f'Unable to upsert: {e}'

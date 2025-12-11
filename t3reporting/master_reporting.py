@@ -1,6 +1,7 @@
 import time
 
 from utils.logs import log_module_run as lmr
+from t3reporting.report_templates import home_html as hh
 from t3reporting.report_templates import navbar_create as nc
 from t3reporting.mylab_reporting import report_mylab_myjournal as rmm
 
@@ -19,6 +20,9 @@ def run_master_reporting(local_config,job_run_id):
     no_tasks_failed = 0
 
     nc.generate_navbar_html(json_file="t3reporting/report_templates/navbar_setup.json",local_config=local_config)
+    no_tasks_succeeded += 1
+
+    hh.generate_html_home(local_config=local_config)
     no_tasks_succeeded += 1
 
     if rmm.create_report_mylab_myjournal1(local_config):

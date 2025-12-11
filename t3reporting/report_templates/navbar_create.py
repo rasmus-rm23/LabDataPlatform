@@ -136,7 +136,6 @@ BODY_CONTENT_PLACE_HOLDER
     )
     only_path = os.path.dirname(file_path)
     os.makedirs(only_path, exist_ok=True)
-    print(file_path)
 
     Path(file_path).write_text(navbar_html, encoding="utf-8")
 

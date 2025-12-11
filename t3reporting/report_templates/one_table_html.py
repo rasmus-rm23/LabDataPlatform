@@ -80,11 +80,6 @@ def create_grouped_scatter_plot(local_config, df, report_name, x_column, y_colum
 
 def generate_html_show_table(local_config, df, report_name, page_header_text):
     # Generate HTML with embedded JS
-    file_path = os.path.join(
-        local_config.get('REPORTING_ROOT_PATH'),
-        f'templates/master.html'
-    )
-
     html_header = f"""
         <style>
             body {{
@@ -165,9 +160,6 @@ def generate_html_show_table(local_config, df, report_name, page_header_text):
         table.setAttribute("data-sortdir", asc ? "asc" : "desc");
     }}
     </script>
-
-    </body>
-    </html>
     """
 
     master_file_path = os.path.join(
@@ -197,7 +189,6 @@ def generate_html_show_table(local_config, df, report_name, page_header_text):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_template)
 
-    print(f"HTML file generated: {report_name}")
 
 def generate_html_plot_and_table(local_config, df, report_name, page_header_text, x_column, y_column, hue_column=None, classifier_column=None):
     if hue_column is not None:
@@ -323,5 +314,4 @@ def generate_html_plot_and_table(local_config, df, report_name, page_header_text
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(html_template)
 
-    print(f"HTML file generated: {report_name}")
 

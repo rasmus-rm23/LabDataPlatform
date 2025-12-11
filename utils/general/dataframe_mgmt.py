@@ -27,7 +27,10 @@ def extract_single_fields(df, field_def_vec):
 
         if not positions:
             if mandatory:
-                raise ValueError(f"Mandatory key '{key}' not found in dataframe.")
+                error_flag = True
+                error_msg = f"Mandatory key '{key}' not found in dataframe."
+                extracted_fields_df = None
+                return extracted_fields_df, error_flag, error_msg
             else:
                 results[field_name] = None
                 continue
@@ -82,7 +85,10 @@ def extract_sub_table(df: pd.DataFrame, table_def_dict: dict) -> pd.DataFrame:
             break
 
     if header_row is None:
-        raise ValueError("Header row not found in dataframe.")
+        error_flag = True
+        error_msg = "Table header row not found in journal data."
+        extracted_fields_df = None
+        return extracted_fields_df, error_flag, error_msg
 
     # --- 2. Collect rows below until blank row encountered ---
     data_rows = []
